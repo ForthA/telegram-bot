@@ -1,0 +1,27 @@
+{
+  "name": "untitled",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "curl": "^0.1.4",
+    "curlrequest": "^1.0.1",
+    "express": "^4.17.1",
+    "latest": "^0.2.0",
+    "mongoose": "^5.9.10",
+    "node-telegram-bot-api": "^0.40.0",
+    "npm-windows-upgrade": "^6.0.1",
+    "request": "^2.88.2",
+    "stripe": "^8.47.1",
+    "yandex-money-sdk": "^0.1.7"
+  },
+  "devDependencies": {
+    "request-promise": "^4.2.5"
+  }
+}
