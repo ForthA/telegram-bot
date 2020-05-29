@@ -36,7 +36,7 @@ var zxc = ''
 var options = {
 reply_markup: JSON.stringify({
     inline_keyboard: [
-      [{text: 'Перейти', url: 'https://telegra.ph/Polzovatelskoe-Soglashenie-05-28', callback_data: '1' }],
+      [{text: 'Перейти', url: 'https://yandex.ru/', callback_data: '1' }],
     ]
   })
 };
@@ -392,6 +392,27 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                             }
                         })
                     }
+                   if (users.follower === false) {
+                   bot.sendMessage(id,'Здесь должно было быть приветствие');
+                      //Здесь приветствие
+                  bot.sendMessage(id,'Пользовательское соглашение',options);
+                                       // Оплата подписки
+                            const boob = {
+                                label: 'Оплата подписки Green Code BOT',
+                                amount: 65000
+                            }
+                            const arr = [boob]
+
+                            bot.sendInvoice(id,'Оплата','Оплата подписки','ZADA','381764678:TEST:16617','start','RUB',arr)
+                           //Выше так же надо будет указать ключ Tranzzo
+                            bot.on('pre_checkout_query', (pre_check) => {
+                                    console.log(pre_check)
+                                    bot.answerPreCheckoutQuery(pre_check.id, true)
+
+                                }
+                            )
+ 
+             }
                 }
 
                     })
