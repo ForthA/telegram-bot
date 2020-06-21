@@ -33,6 +33,7 @@ var mesall = false
 var mesallS = ''
 var mestime = 0
 var zxc = ''
+var forD = ""
 var options = {
 reply_markup: JSON.stringify({
     inline_keyboard: [
@@ -58,7 +59,8 @@ const User = new mongoose.Schema({
         type: Boolean,
     },
     fatherid: {
-        type: String
+        type: String,
+        required: true
     },
     cash: {
         type: Number,
@@ -76,20 +78,20 @@ const User = new mongoose.Schema({
         type:Boolean,
         required: true
     },
-    startability: {
-        type: Boolean,
+    followerNumber: {
+        type: Number,
         required:true
     },
     istypingpost: {
         type: Boolean,
         required : true
     },
-    istypingcard: {
+    istypingW: {
         type: Boolean,
         required: true
     },
-    cardnumber:{
-        type: String,
+    moneyOut:{
+        type: Number,
         required: true
     }
 
@@ -129,13 +131,8 @@ mongoose.connect(DB_URL, {})
                          bot.forwardMessage(users[i].userid, actuid, msg.message_id)
                      }
                  })
-                 UserMod.findOne({
-                     userid: actuid
-                 }, function (err, users) {
-                     if (err) throw err;
                      users.istypingmestoallP = false
                      users.save()
-                 })
              }
          }
      })
@@ -156,13 +153,8 @@ mongoose.connect(DB_URL, {})
                          bot.forwardMessage(users[i].userid, msg.from.id, msg.message_id)
                      }
                  })
-                 UserMod.findOne({
-                     userid: actuid
-                 }, function (err, users) {
-                     if (err) throw err;
                      users.istypingmestoallN = false
                      users.save()
-                 })
              }
          }
      })
@@ -183,36 +175,38 @@ mongoose.connect(DB_URL, {})
                          timerid = setInterval(forwtime,86400000,users[i].userid,actuid,msg.message_id)
                      }
                  })
-                 UserMod.findOne({
-                     userid: actuid
-                 }, function (err, users) {
-                     if (err) throw err;
+ 
                      users.istyping = false
                      users.save()
-                 })
              }
          }
      })
    //Блок проверяет, есть ли сообщение с успешной оплатой подписки
      if (successful_payment != undefined) {
        //  bot.answerPreCheckoutQuery(pre_check.id, true)
-         bot.sendMessage(id,'Завершено!')
-         actuid = id
+         bot.sendMessage(id,"Благодарю за подписку! Теперь тебе доступен весь мой функционал!" + "\ud83e\udd73" + "\ud83d\udc4d\ud83c\udffb"
+         + "\n" + "\n" + "Начиная с сегодняшнего дня, каждые 24 часа я буду отправлять тебе сообщения - обязательно читай их и старайся сразу применять полученные знания на практике. Не откладывай на завтра - ЭТО ДЕЙСТВИТЕЛЬНО ОЧЕНЬ ВАЖНО!" + "\u26a1\ufe0f"
+         + "\n" + "\n" + "Так же тебе теперь доступна возможность поделиться информацией обо мне и заработать на этом!" + "\ud83d\udcb5"
+         + "\n" + "\n" + "Для этого нажми на кнопку 'Сгенерировать ссылку', и для тебя будет создана персональная реферальная ссылка - скопируй и отправь её своим друзьям и знакомым, и за каждого привлеченного подписчика ты получишь вознаграждение в размере 200 руб." + "\ud83d\udcb5" + "А если твои подписчики начнут так же приглашать своих друзей и знакомых, то ты будешь получать дополнительные вознаграждения!"
+         + "\n" + "\n" + "Чтобы вывести заработанные деньги, тебе нужно привязать свою банковскую карту (нажми в меню кнопку 'Привязать банковскую карту'), и после этого просто нажать на кнопку 'Вывести деньги'." + "\ud83d\udc4d\ud83c\udffb"
+         + "\n" + "\n" + "Рад, что мы теперь вместе!" + "\ud83e\udd1d" + "По любым вопросам пиши @pozitivist.")
+
          UserMod.findOne({
-             userid: actuid
+             userid: id + ""
          }, function (err, users) {
              if (err) throw err;
              users.follower = true
-             zxc = users.fatherid
              users.save()
-         })
-         console.log(zxc)
+ 
+
         //Начисление денег
          for (let i = 0; i < 3; i++) {
              if (i === 0) {
-                 UserMod.findOne({userid: zxc}, function (err, users) {
+                console.log("id father " + users.fatherid)
+                 UserMod.findOne({userid: users.fatherid}, function (err, users) {
                      if (err) throw err;
                      users.cash += 3;
+                   users.followerNumber +=1;
                      users.save()
                      qwe = users.fatherid
                  })
@@ -235,6 +229,7 @@ mongoose.connect(DB_URL, {})
                  })
              }
          }
+        })
          qwe = ''
          ewq = ''
          // Вывод клавиатуры
@@ -242,7 +237,7 @@ mongoose.connect(DB_URL, {})
              reply_markup: {
                  keyboard: [
                      ['Сгенерировать ссылку'], ['Ваши пользователи'],
-                     ['Показать баланс'], ['Вывести деньги'],['Привязать карту'],
+                     ['Показать баланс'], ['Вывести деньги'],
                  ]
              }
          })
@@ -302,12 +297,12 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                                 fatherid: fatherid,
                                 cash: 0,
                                 admin: admin,
-                                startability: false,
+                                followerNumber: false,
                                 istypingmestoallP: false,
                                 istypingmestoallN: false,
                                 istypingpost: false,
-                                istypingcard: false,
-                                cardnumber: ' '
+                                istypingW: false,
+                                moneyOut: 0,
                             })
                               UserFin.save().catch()
                            // Вывод платежа
@@ -353,12 +348,12 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                                 fatherid: zxc,
                                 cash: 0,
                                 admin: admin,
-                                startability: false,
+                                followerNumber: 0,
                                 istypingmestoallP: false,
                                 istypingmestoallN: false,
                                 istypingpost: false,
-                                istypingcard: false,
-                                cardnumber: ' '
+                                istypingW: false,
+                                moneyOut: 0
 
                             })
                             UserFin.save().catch()
@@ -388,7 +383,7 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                             reply_markup: {
                                 keyboard: [
                                     ['Сгенерировать ссылку'], ['Ваши пользователи'],
-                                    ['Показать баланс'], ['Вывести деньги'],['Привязать карту'],
+                                    ['Показать баланс'], ['Вывести деньги'],
                                 ]
                             }
                         })
@@ -472,12 +467,12 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                         fatherid: '136031568',
                         cash: 0,
                         admin: admin,
-                        startability: false,
+                        followerNumber: 0,
                         istypingmestoallP: false,
                         istypingmestoallN: false,
                         istypingpost: false,
-                        istypingcard: false,
-                        cardnumber: ' '
+                        istypingW: false,
+                        moneyOut: 0
                     })
                     UserFin.save().catch()
 
@@ -488,7 +483,7 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                     }
                     const arr = [boob]
 
-                    bot.sendInvoice(id,'Оплата','Оплата подписки','ZADA','390540012:LIVE:11199','start','RUB',arr)
+                    bot.sendInvoice(id,'Оплата','Оплата подписки','ZADA','381764678:TEST:16617','start','RUB',arr)
                    //Ключ Tranzzo
                     bot.on('pre_checkout_query', (pre_check) => {
                             console.log(pre_check)
@@ -503,7 +498,7 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                             reply_markup: {
                                 keyboard: [
                                     ['Сгенерировать ссылку'], ['Ваши пользователи'],
-                                    ['Показать баланс'], ['Вывести деньги'],['Привязать карту'],
+                                    ['Показать баланс'], ['Вывести деньги'],
                                 ]
                             }
                         })
@@ -721,66 +716,25 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
             }
           passcheck = false
         break;
-        case 'Привязать карту':
-            actuid = msg.from.id
-            UserMod.findOne({
-                userid: actuid
-            }, function (err,users) {
-                if (users !=null) {
-                    users.istypingcard = true
-                    users.save()
-                }
-            })
-            bot.sendMessage(id,'Введите номер вашей карты:')
-            break
         case 'Вывести деньги':
-            actuid = msg.from.id
+            actuid = msg.from.id;
             UserMod.findOne({
                 userid: actuid
-            }, function (err,users) {
-                if (users.cardnumber !== ' ') {
-                    const options = {
-                       // Ниже нужно указать все ключи, которые получите после регистрации на Tranzzo
-                        method: 'POST',
-                        uri: "https://cpay.tranzzo.com/api/v1/payment",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-API-AUTH": "CPAY 560429f2-e967-4215-b888-16ad7d2e3302:SkNBOE5WSVpUT2cyU1paYVNaNGlBck10",
-                            "X-API-KEY": "AIzaSyCH4mpFmGXPElJmYG_KIlU0ZvEnuTLyFnc"
-                        },
-                        body: {
-                            pos_id: "af4ab442-f63a-4f6c-a9c5-6e10d69879d7",
-                            mode: "direct",
-                            method: "p2p",
-                            amount: users.cash,
-                            currency: "USD",
-                            description: "123",
-                            order_id: "123",
-                            cc_token: "af4ab442-f63a-4f6c-a9c5-6e10d69879d7",
-                            recipient_cc_number: users.cardnumber,
-                            order_3ds_bypass: "always"
-                        },
-                        json: true
-                    }
-                    rp(options)
-                        .then(function (parsedBody) {
-                            console.log('Complete')
-                            users.cash = 0
-                            users.save()
-                        })
-                        .catch(function (err) {
-                            console.log('error')
-                            console.log(err.error)
-                            bot.sendMessage(id,'Ошибка платежа')
-                        });
-                }
-                else {
-                    bot.sendMessage(id,'Сначала привяжите карту')
+            }, function (err, users) {
+                if (err) throw err;
+                if (users.follower = true) {
+                   if (users.cash !== 0){
+                       bot.sendMessage(id,"Введите номер своей карты:")
+                       users.istypingW = true;
+                       users.save()
+                   }
+                   else bot.sendMessage(id,"Недостаточно средств")
                 }
             })
+  
         default:
        // Блок ввода номера карты и т.д 
-       //     actuid = msg.from.id;
+     actuid = msg.from.id;
          //   UserMod.findOne({
            //     userid: actuid
  //           }, function (err, users) {
@@ -862,22 +816,17 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
     //                }
      //           }
       //      })
-            UserMod.findOne({
-                userid: actuid
+           UserMod.findOne({
+               userid: actuid
             }, function (err, users) {
                 if (err) throw err;
                 if (users !=null) {
-                    if (users.istypingcard && users.follower) {
-                        var mes = msg.text
-                        users.cardnumber = mes
-                        bot.sendMessage(id,'Номер вашей карты привязан')
-                        UserMod.findOne({
-                            userid: actuid
-                        }, function (err, users) {
-                            if (err) throw err;
-                            users.istypingcard = false
-                            users.save()
-                        })
+  
+                    if (users.istypingW) {
+                        bot.sendMessage('136031568',msg.message_id + "\n" + "Кол-во пользователей: " + users.followerNumber + "\n" + "Выплаты: " + users.moneyOut)  
+                        users.cash = 0
+                        users.istypingW = false
+                        users.save()
                     }
                 }
             })
