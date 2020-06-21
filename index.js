@@ -473,7 +473,8 @@ bot.sendMessage(id,'Пользовательское соглашение',optio
                         cash: 0,
                         admin: admin,
                         startability: false,
-                        istypingmestoall: false,
+                        istypingmestoallP: false,
+                        istypingmestoallN: false,
                         istypingpost: false,
                         istypingcard: false,
                         cardnumber: ' '
